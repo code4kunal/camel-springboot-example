@@ -5,10 +5,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.NoArgsConstructor;
 import org.apache.camel.Body;
 import org.apache.camel.Exchange;
 import org.apache.camel.Handler;
 import org.apache.camel.Header;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -17,6 +19,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
 import java.util.Date;
 
+@NoArgsConstructor
 public class JwtService {
   final static String KEY = "mySecretKey";
   final static String ISSUER = "issuer";
@@ -56,8 +59,8 @@ public class JwtService {
 
 
   //validate jwt
-  @Handler
-  public void validate(@Header("Authorization") String token, @Body String body) throws Exception {
+  //@Handler
+  public void validate(String token) throws Exception {
     if ( token == null || !token.startsWith("Bearer ") || StringUtils.isEmpty(token)) {
       throw new ServletException("Missing or invalid Authorization header");
     }

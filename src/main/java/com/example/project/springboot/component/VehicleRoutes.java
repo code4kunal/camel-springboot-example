@@ -1,13 +1,31 @@
 package com.example.project.springboot.component;
 
+import com.example.project.springboot.dao.Vehicle;
+import com.example.project.springboot.model.VehicleRequest;
+import com.example.project.springboot.processor.EditVehicleRequestProcessor;
+import com.example.project.springboot.processor.JwtRequestProcessor;
 import com.example.project.springboot.service.JwtService;
 import com.example.project.springboot.service.VehicleService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.camel.Exchange;
+import org.apache.camel.Message;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.camel.model.dataformat.JacksonXMLDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
+import org.apache.logging.log4j.LogManager;
+import org.restlet.data.Form;
+import org.restlet.util.Series;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+
 
 @Component
 public class VehicleRoutes extends RouteBuilder {
+
     @Override
     public void configure() throws Exception {
 
@@ -25,12 +43,17 @@ public class VehicleRoutes extends RouteBuilder {
             .get("/").to("direct:generate-token");
 
 
-        from("direct:hello").bean(JwtService.class, "validate(${body}, ${header.Authorization})");
-        from("direct:bye").transform().simple("Bye ${header.id}");
         from("direct:generate-token").bean(JwtService.class, "createJWT(1,issuer,subject,5000000)");;
-        from("direct:addvehicle").bean(JwtService.class, "validate(${header.Authorization}, ${body})");;
-        from("direct:editvehicle").bean(JwtService.class, "validate(${body})");;
-        from("direct:deletevehicle").bean(JwtService.class, "validate(${body})");;
+
+        from("direct:addvehicle").process(new JwtRequestProcessor()).unmarshal(new JacksonDataFormat(VehicleRequest.class)).
+                bean(VehicleService.class, "createVehicle").marshal().json(JsonLibrary.Jackson);
+
+        from("direct:editvehicle").process(new JwtRequestProcessor()).unmarshal(new JacksonDataFormat(VehicleRequest.class))
+                .process(new EditVehicleRequestProcessor())
+                .bean(VehicleService.class, "editVehicle(${body}").marshal().json(JsonLibrary.Jackson);
+
+        from("direct:deletevehicle").bean(VehicleService.class, "deleteVehicle(${header.id})");
+
         from("direct:viewvehicles").bean(VehicleService.class, "findAllVehicles()").
                 marshal().json(JsonLibrary.Jackson);
         from("direct:veiwvehicle").bean(VehicleService.class, "findVehicle(${header.id})").
