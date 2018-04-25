@@ -23,8 +23,9 @@ public class JwtService {
   final static String SUBJECT = "subject";
 
   //generate jwt
-  private String createJWT(String id, String issuer, String subject, long ttlMillis) {
+  public String createJWT(String id , String issuer, String subject, String ttlmls) {
 
+    Long ttlMillis = new Long(ttlmls);
     //The JWT signature algorithm we will be using to sign the token
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
@@ -56,7 +57,7 @@ public class JwtService {
 
   //validate jwt
   @Handler
-  private void validate(@Header("Authorization") String token, @Body String body) throws Exception {
+  public void validate(@Header("Authorization") String token, @Body String body) throws Exception {
     if ( token == null || !token.startsWith("Bearer ") || StringUtils.isEmpty(token)) {
       throw new ServletException("Missing or invalid Authorization header");
     }

@@ -1,7 +1,9 @@
 package com.example.project.springboot.component;
 
 import com.example.project.springboot.service.JwtService;
+import com.example.project.springboot.service.VehicleService;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.dataformat.JsonLibrary;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,21 +14,28 @@ public class VehicleRoutes extends RouteBuilder {
         restConfiguration().host("localhost").port(8081);
         restConfiguration().component("restlet");
 
-        rest("/vehicle")
-                .get("/").to("direct:hello")
-                .get("/{id}").to("direct:bye");
+        rest("/v1")
+                .get("/viewvehicles").to("direct:viewvehicles").produces("application/json")
+                .post("/addvehicle").to("direct:addvehicle")
+                .get("/viewvehicles/{id}").to("direct:veiwvehicle")
+                .post("/editvehicle/{id}").to("direct:editvehicle")
+                .delete("/deletevehicle/{id}").to("direct:deletevehicle");
+
         rest("/generate-token")
             .get("/").to("direct:generate-token");
-        rest("/users").description("Users REST service")
-                .get("/").description("The list of all the users")
-                .route().routeId("users-api")
-                .to("sql:select  * from users?" +
-                        "dataSource=dataSource&" +
-                        "outputClass=com.example.project.springboot.dao.Users")
-                .endRest();
+
 
         from("direct:hello").bean(JwtService.class, "validate(${body}, ${header.Authorization})");
         from("direct:bye").transform().simple("Bye ${header.id}");
-        from("direct:generate-token").bean(JwtService.class, "validate(${body})");;
+        from("direct:generate-token").bean(JwtService.class, "createJWT(1,issuer,subject,5000000)");;
+        from("direct:addvehicle").bean(JwtService.class, "validate(${header.authorization}, ${body})");;
+        from("direct:editvehicle").bean(JwtService.class, "validate(${body})");;
+        from("direct:deletevehicle").bean(JwtService.class, "validate(${body})");;
+        from("direct:viewvehicles").bean(VehicleService.class, "findAllVehicles()").
+                marshal().json(JsonLibrary.Jackson);
+        from("direct:veiwvehicle").bean(VehicleService.class, "findVehicle(${header.id})").
+                marshal().json(JsonLibrary.Jackson);
+
+
     }
 }
