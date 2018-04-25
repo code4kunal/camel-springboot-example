@@ -97,7 +97,7 @@
             <version>2.9.2</version>
         </dependency>
 
-    </dependencies>
+	</dependencies>
 
 	<build>
 		<plugins>
@@ -109,6 +109,14 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>5.0.7</version>
+                <configuration>
+                    <url>jdbc:postgresql://localhost:5432/project</url>
+                    <user>postgres</user>
+                    <password>root</password>
+                    <schemas>
+                        <schema>public</schema>
+                    </schemas>
+                </configuration>
             </plugin>
 		</plugins>
 	</build>
