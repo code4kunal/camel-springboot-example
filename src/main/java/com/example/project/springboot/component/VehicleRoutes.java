@@ -28,7 +28,7 @@ public class VehicleRoutes extends RouteBuilder {
         from("direct:hello").bean(JwtService.class, "validate(${body}, ${header.Authorization})");
         from("direct:bye").transform().simple("Bye ${header.id}");
         from("direct:generate-token").bean(JwtService.class, "createJWT(1,issuer,subject,5000000)");;
-        from("direct:addvehicle").bean(JwtService.class, "validate(${header.authorization}, ${body})");;
+        from("direct:addvehicle").bean(JwtService.class, "validate(${header.Authorization}, ${body})");;
         from("direct:editvehicle").bean(JwtService.class, "validate(${body})");;
         from("direct:deletevehicle").bean(JwtService.class, "validate(${body})");;
         from("direct:viewvehicles").bean(VehicleService.class, "findAllVehicles()").
