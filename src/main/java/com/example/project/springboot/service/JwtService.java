@@ -1,11 +1,18 @@
 package com.example.project.springboot.service;
 
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.camel.Body;
+import org.apache.camel.Exchange;
+import org.apache.camel.Handler;
+import org.apache.camel.Header;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.ServletException;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
 import java.util.Date;
@@ -48,13 +55,19 @@ public class JwtService {
 
 
   //validate jwt
-  private void validate(String jwt){
+  @Handler
+  private void validate(@Header("Authorization") String token, @Body String body) throws Exception {
+    if ( token == null || !token.startsWith("Bearer ") || StringUtils.isEmpty(token)) {
+      throw new ServletException("Missing or invalid Authorization header");
+    }
 
+    final String jwt = token.substring(7);
     Claims claims = Jwts.parser()
         .setSigningKey(DatatypeConverter.parseBase64Binary(KEY))
         .parseClaimsJws(jwt).getBody();
     if(!claims.getIssuer().equalsIgnoreCase(ISSUER) || !claims.getSubject().equalsIgnoreCase(SUBJECT)){
       //throw not authorised exeption
     }
+
   }
 }
