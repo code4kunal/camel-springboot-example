@@ -4,6 +4,7 @@ import com.example.project.springboot.dao.Vehicle;
 import com.example.project.springboot.model.VehicleRequest;
 import com.example.project.springboot.processor.EditVehicleRequestProcessor;
 import com.example.project.springboot.processor.JwtRequestProcessor;
+import com.example.project.springboot.processor.ResponseProcessor;
 import com.example.project.springboot.service.JwtService;
 import com.example.project.springboot.service.VehicleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
 
 @Component
@@ -32,11 +34,23 @@ public class VehicleRoutes extends RouteBuilder {
         restConfiguration().host("localhost").port(8081);
         restConfiguration().component("restlet");
 
+        onException(NoSuchElementException.class).handled(true)
+                // use HTTP status 404 when input data is invalid
+                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(404))
+
+            ;
+
         rest("/v1")
                 .get("/viewvehicles").to("direct:viewvehicles").produces("application/json")
+
                 .post("/addvehicle").to("direct:addvehicle")
-                .get("/viewvehicles/{id}").to("direct:veiwvehicle")
+
+                .get("/viewvehicles/{id}")
+                .to("direct:viewvehicle")
+
+
                 .post("/editvehicle/{id}").to("direct:editvehicle")
+
                 .delete("/deletevehicle/{id}").to("direct:deletevehicle");
 
         rest("/generate-token")
@@ -56,7 +70,8 @@ public class VehicleRoutes extends RouteBuilder {
 
         from("direct:viewvehicles").bean(VehicleService.class, "findAllVehicles()").
                 marshal().json(JsonLibrary.Jackson);
-        from("direct:veiwvehicle").bean(VehicleService.class, "findVehicle(${header.id})").
+        from("direct:viewvehicle")
+                .bean(VehicleService.class, "findVehicle(${header.id})").
                 marshal().json(JsonLibrary.Jackson);
 
 
