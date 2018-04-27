@@ -26,7 +26,7 @@ public class JwtService {
   final static String SUBJECT = "subject";
 
   //generate jwt
-  public String createJWT(String id , String issuer, String subject, String ttlmls) {
+  public String createJWT(String id, String issuer, String subject, String ttlmls) {
 
     Long ttlMillis = new Long(ttlmls);
     //The JWT signature algorithm we will be using to sign the token
@@ -61,7 +61,7 @@ public class JwtService {
   //validate jwt
   //@Handler
   public void validate(String token) throws Exception {
-    if ( token == null || !token.startsWith("Bearer ") || StringUtils.isEmpty(token)) {
+    if (token == null || !token.startsWith("Bearer ") || StringUtils.isEmpty(token)) {
       throw new ServletException("Missing or invalid Authorization header");
     }
 
@@ -69,9 +69,9 @@ public class JwtService {
     Claims claims = Jwts.parser()
         .setSigningKey(DatatypeConverter.parseBase64Binary(KEY))
         .parseClaimsJws(jwt).getBody();
-    if(!claims.getIssuer().equalsIgnoreCase(ISSUER) || !claims.getSubject().equalsIgnoreCase(SUBJECT)){
+    if (!claims.getIssuer().equalsIgnoreCase(ISSUER) || !claims.getSubject().equalsIgnoreCase(SUBJECT)) {
+      throw new IllegalAccessException("Not a valid user.");
       //throw not authorised exeption
     }
-
   }
 }
