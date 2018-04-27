@@ -6,9 +6,8 @@ import com.example.project.springboot.model.VehicleRequest;
 import com.example.project.springboot.repository.VehiclesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class VehicleService implements VehicleFactoryService{

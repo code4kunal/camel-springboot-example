@@ -11,9 +11,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
-import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.stereotype.Component;
-
 
 @Component
 public class VehicleRoutes extends RouteBuilder {
@@ -25,14 +23,6 @@ public class VehicleRoutes extends RouteBuilder {
         // to use undertow component and run on port 8081
         .component("restlet").port(8081);
 
-
-
-//    // error handling to return custom HTTP status codes for the various exceptions
-//    onException(InvalidVehicleException.class)
-//        .handled(true)
-//        // use HTTP status 400 when input data is invalid
-//        .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(400))
-//        .setBody(constant(""));
 
     onException(VehicleNotFoundException.class)
         .handled(true)

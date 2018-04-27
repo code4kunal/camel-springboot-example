@@ -1,5 +1,4 @@
 package com.example.project.springboot.service;
-
 import com.example.project.springboot.dao.Vehicle;
 import com.example.project.springboot.exception.VehicleNotFoundException;
 import com.example.project.springboot.model.VehicleRequest;

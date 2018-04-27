@@ -1,18 +1,10 @@
 package com.example.project.springboot.service;
-
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.NoArgsConstructor;
-import org.apache.camel.Body;
-import org.apache.camel.Exchange;
-import org.apache.camel.Handler;
-import org.apache.camel.Header;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.ServletException;
 import javax.xml.bind.DatatypeConverter;
